@@ -1,6 +1,6 @@
 on:
   schedule:
-   - cron: '0 16 * * *'
+   - cron: '28 * * * *'
 
 jobs:
   delete_old_archives:
