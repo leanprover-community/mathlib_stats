@@ -1,0 +1,38 @@
+on:
+  schedule:
+   - cron: '0 16 * * *'
+
+jobs:
+  delete_old_archives:
+    runs-on: ubuntu-latest
+    name: A job to delete old archives from Azure
+    steps:
+
+    - name: Checkout scripts
+      uses: actions/checkout@v2
+
+    - name: Checkout mathlib
+      run: git clone https://github.com/leanprover-community/mathlib
+
+    - name: Install packages
+      run: sudo apt-get install gitstats gnuplot
+
+    - name: Run gitstats
+      run: gitstats mathlib docs
+
+    - name: Make nolints graph
+      run: | 
+        bash nolint_graph.sh > nolint_graph_out.txt
+        cut -f2 -d: nolint_graph.sh > rev_stats.txt
+        gnuplot plot.gnu
+
+    - name: push results
+      if: always()
+      uses: EndBug/add-and-commit@v4
+      with:
+        add: 'docs'
+        author_name: 'leanprover-community-bot'
+        author_email: 'leanprover.community@gmail.com'
+        message: 'Update gitstats'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
