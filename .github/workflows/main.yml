@@ -1,6 +1,6 @@
 on:
   schedule:
-   - cron: '28 * * * *'
+   - cron: '0 1 * * *'
 
 jobs:
   delete_old_archives:
@@ -20,11 +20,11 @@ jobs:
     - name: Run gitstats
       run: gitstats mathlib docs
 
-    - name: Make nolints graph
-      run: | 
-        bash nolint_graph.sh > nolint_graph_out.txt
-        cut -f2 -d: nolint_graph.sh > rev_stats.txt
-        gnuplot plot.gnu
+    # - name: Make nolints graph
+    #   run: | 
+    #     bash nolint_graph.sh > nolint_graph_out.txt
+    #     cut -f2 -d: nolint_graph.sh > rev_stats.txt
+    #     gnuplot plot.gnu
 
     - name: push results
       if: always()
