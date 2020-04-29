@@ -1,4 +1,5 @@
 #!/bin/bash
+cd mathlib
 
 git checkout -q master
 
