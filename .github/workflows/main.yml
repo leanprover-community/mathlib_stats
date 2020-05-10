@@ -23,7 +23,7 @@ jobs:
         python-version: 3.8
 
     - name: Run gitstats
-      run: ./gitstats mathlib docs
+      run: ./gitstats.py mathlib docs
 
     - name: Install gnuplot
       run: sudo apt-get install gnuplot
