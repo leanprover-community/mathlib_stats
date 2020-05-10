@@ -1,11 +1,13 @@
 on:
   schedule:
    - cron: '0 2 * * *'
+  push:
 
 jobs:
-  delete_old_archives:
+  mathlib_stats:
+    if: github.event.pusher.name != 'leanprover-community-bot'
     runs-on: ubuntu-latest
-    name: A job to delete old archives from Azure
+    name: Generate statistics about the mathlib repo
     steps:
 
     - name: Checkout scripts
@@ -14,20 +16,26 @@ jobs:
     - name: Checkout mathlib
       run: git clone https://github.com/leanprover-community/mathlib
 
-    - name: Install packages
-      run: sudo apt-get install gitstats gnuplot
+    - name: install Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
 
     - name: Run gitstats
-      run: gitstats mathlib docs
+      run: ./gitstats.py mathlib docs
+
+    - name: Install gnuplot
+      run: sudo apt-get install gnuplot
 
     - name: Make nolints graph
-      run: | 
+      run: |
         bash nolint_graph.sh > nolint_graph_out.txt
         cut -f2 -d: nolint_graph_out.txt > rev_stats.txt
         gnuplot plot.gnu
 
     - name: push results
-      if: always()
+      # push results when we push to master
+      if: github.repository == 'leanprover-community/mathlib_stats' && github.ref == 'refs/heads/master'
       uses: EndBug/add-and-commit@v4
       with:
         add: 'docs'
