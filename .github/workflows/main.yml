@@ -4,9 +4,10 @@ on:
   push:
 
 jobs:
-  delete_old_archives:
+  mathlib_stats:
+    if: github.event.pusher.name != 'leanprover-community-bot'
     runs-on: ubuntu-latest
-    name: A job to delete old archives from Azure
+    name: Generate statistics about the mathlib repo
     steps:
 
     - name: Checkout scripts
@@ -34,7 +35,7 @@ jobs:
 
     - name: push results
       # push results when we push to master
-      if: github.repository == 'leanprover-community/mathlib_stats' && github.ref == 'refs/heads/master' && github.event.pusher.name != 'leanprover-community-bot'
+      if: github.repository == 'leanprover-community/mathlib_stats' && github.ref == 'refs/heads/master'
       uses: EndBug/add-and-commit@v4
       with:
         add: 'docs'
