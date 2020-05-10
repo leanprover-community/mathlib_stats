@@ -1,8 +1,7 @@
 on:
   schedule:
    - cron: '0 2 * * *'
-  # Uncomment to test CI
-  # push
+  push:
 
 jobs:
   delete_old_archives:
@@ -34,7 +33,8 @@ jobs:
         gnuplot plot.gnu
 
     - name: push results
-      if: always()
+      # push results when we push to master
+      if: github.repository == 'leanprover-community/mathlib_stats' && github.ref == 'refs/heads/master' && github.event.pusher.name != 'leanprover-community-bot'
       uses: EndBug/add-and-commit@v4
       with:
         add: 'docs'
