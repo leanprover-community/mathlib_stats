@@ -718,7 +718,7 @@ class JsonReportCreator(ReportCreator):
         self.title = data.projectname
 
         root = Path(path)
-        data_file = (root/'gitstats.json').open('w')
+        data_file = (root/'gitstats.js').open('w')
         time_format = '%Y-%m-%d %H:%M:%S'
         data_file.write(f"""
 gen_date= "{datetime.datetime.now().strftime(time_format)}"
