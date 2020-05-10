@@ -1,6 +1,9 @@
 on:
-  schedule:
-   - cron: '0 2 * * *'
+  # schedule:
+  #  - cron: '0 2 * * *'
+  push:
+    - branches:
+      - newsite_gitstats
 
 jobs:
   delete_old_archives:
