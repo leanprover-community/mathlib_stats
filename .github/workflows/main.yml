@@ -1,9 +1,8 @@
 on:
-  # schedule:
-  #  - cron: '0 2 * * *'
-  push:
-    branches:
-      - newsite_gitstats
+  schedule:
+   - cron: '0 2 * * *'
+  # Uncomment to test CI
+  # push
 
 jobs:
   delete_old_archives:
@@ -34,13 +33,13 @@ jobs:
         cut -f2 -d: nolint_graph_out.txt > rev_stats.txt
         gnuplot plot.gnu
 
-    # - name: push results
-    #   if: always()
-    #   uses: EndBug/add-and-commit@v4
-    #   with:
-    #     add: 'docs'
-    #     author_name: 'leanprover-community-bot'
-    #     author_email: 'leanprover.community@gmail.com'
-    #     message: 'Update gitstats'
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: push results
+      if: always()
+      uses: EndBug/add-and-commit@v4
+      with:
+        add: 'docs'
+        author_name: 'leanprover-community-bot'
+        author_email: 'leanprover.community@gmail.com'
+        message: 'Update gitstats'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
