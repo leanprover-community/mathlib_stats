@@ -16,13 +16,23 @@ jobs:
     - name: Checkout mathlib
       run: git clone https://github.com/leanprover-community/mathlib
 
+    - name: Checkout mathlib-mailmap
+      uses: actions/checkout@v2
+      with:
+        # this repo is private to prevent spambots from scraping email addresses
+        repository: leanprover-community/mathlib-mailmap
+        token: ${{ secrets.MAILMAP_GITHUB_TOKEN }}
+        path: mailmap
+
     - name: install Python
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
 
     - name: Run gitstats
-      run: ./gitstats.py mathlib docs
+      run: |
+        cp mailmap/mailmap mathlib/.mailmap
+        ./gitstats.py mathlib docs
 
     - name: Install gnuplot
       run: sudo apt-get install gnuplot
