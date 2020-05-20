@@ -802,8 +802,8 @@ avg_commits_by_author = {data.getTotalCommits()/data.getTotalAuthors():.1f}
     return commitsA - commitsB;
 }
 function sort_age(a, b, rowA, rowB) {
-    const ageA = rowA['age_seconds'];
-    const ageB = rowB['age_seconds'];
+    const ageA = rowA.getData().age_seconds;
+    const ageB = rowB.getData().age_seconds;
     return ageA - ageB;
 }
 """)
