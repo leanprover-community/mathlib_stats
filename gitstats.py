@@ -642,6 +642,7 @@ class GitDataCollector(DataCollector):
                         a['date_first'] = date_first.strftime('%Y-%m-%d')
                         a['date_last'] = date_last.strftime('%Y-%m-%d')
                         a['timedelta'] = delta
+                        a['age_seconds'] = delta.total_seconds()
                         if 'lines_added' not in a: a['lines_added'] = 0
                         if 'lines_removed' not in a: a['lines_removed'] = 0
 
@@ -794,15 +795,28 @@ avg_commits_by_author = {data.getTotalCommits()/data.getTotalAuthors():.1f}
 
         ### By time zone missing (pure table)
 
+        ### Custom sorting functions
+        data_file.write("""function sort_commits(a, b) {
+    const commitsA = parseInt(a.split(' '));
+    const commitsB = parseInt(b.split(' '));
+    return commitsA - commitsB;
+}
+function sort_age(a, b, rowA, rowB) {
+    const ageA = rowA['age_seconds'];
+    const ageB = rowB['age_seconds'];
+    return ageA - ageB;
+}
+""")
         ### Authors
         data_file.write('authors_cols = ['
                 '{title: "Author", field: "Author"},'
-                '{title: "Commits (%)", field: "Commits (%)"},'
+                '{title: "Commits (%)", field: "Commits (%)", sorter: sort_commits},'
                 '{title: "+ lines", field: "+ lines"},'
                 '{title: "- lines", field: "- lines"},'
                 '{title: "First commit", field: "First commit"},'
                 '{title: "Last commit", field: "Last commit"},'
-                '{title: "Age", field: "Age"},'
+                '{title: "Age", field: "Age", sorter: sort_age},'
+                '{title: "age_seconds", field: "age_seconds", visible: false},'
                 '{title: "Active days", field: "Active days"},'
                 '{title: "# by commits", field: "# by commits"}]\n')
         authors = []
@@ -816,6 +830,7 @@ avg_commits_by_author = {data.getTotalCommits()/data.getTotalAuthors():.1f}
                     'First commit': info['date_first'],
                     'Last commit': info['date_last'],
                     'Age': str(info['timedelta']),
+                    'age_seconds': info['age_seconds'],
                     'Active days': len(info['active_days']),
                     '# by commits': info['place_by_commits']}
             authors.append(row)
