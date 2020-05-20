@@ -1,6 +1,6 @@
 
-gen_date= "2020-05-20 17:37:02"
-gen_duration = 6.8
+gen_date= "2020-05-20 17:45:20"
+gen_duration = 5.9
 report_start = "2017-07-21 08:02:10"
 report_end = "2020-05-20 15:35:04"
 age = 1035
@@ -27,8 +27,8 @@ function sort_commits(a, b) {
     return commitsA - commitsB;
 }
 function sort_age(a, b, rowA, rowB) {
-    const ageA = rowA['age_seconds'];
-    const ageB = rowB['age_seconds'];
+    const ageA = rowA.getData().age_seconds;
+    const ageB = rowB.getData().age_seconds;
     return ageA - ageB;
 }
 authors_cols = [{title: "Author", field: "Author"},{title: "Commits (%)", field: "Commits (%)", sorter: sort_commits},{title: "+ lines", field: "+ lines"},{title: "- lines", field: "- lines"},{title: "First commit", field: "First commit"},{title: "Last commit", field: "Last commit"},{title: "Age", field: "Age", sorter: sort_age},{title: "age_seconds", field: "age_seconds", visible: false},{title: "Active days", field: "Active days"},{title: "# by commits", field: "# by commits"}]
