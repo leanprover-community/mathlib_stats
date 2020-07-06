@@ -288,7 +288,7 @@ class GitDataCollector(DataCollector):
                         (hash, tag) = line.split(' ')
 
                         tag = tag.replace('refs/tags/', '')
-                        output = getpipeoutput(['git log "%s" --pretty=format:"%%at %%aN" -n 1' % hash])
+                        output = getpipeoutput(['git log "%s" --pretty=format:"%%ct %%aN" -n 1' % hash])
                         if len(output) > 0:
                                 parts = output.split(' ')
                                 stamp = 0
@@ -318,7 +318,7 @@ class GitDataCollector(DataCollector):
 
                 # Collect revision statistics
                 # Outputs "<stamp> <date> <time> <timezone> <author> '<' <mail> '>'"
-                lines = getpipeoutput(['git rev-list --pretty=format:"%%at %%ai %%aN <%%aE>" %s' % getlogrange('HEAD'), 'grep -v ^commit']).split('\n')
+                lines = getpipeoutput(['git rev-list --pretty=format:"%%ct %%ai %%aN <%%aE>" %s' % getlogrange('HEAD'), 'grep -v ^commit']).split('\n')
                 for line in lines:
                         parts = line.split(' ', 4)
                         author = ''
@@ -425,7 +425,7 @@ class GitDataCollector(DataCollector):
                         self.commits_by_timezone[timezone] = self.commits_by_timezone.get(timezone, 0) + 1
 
                 # outputs "<stamp> <files>" for each revision
-                revlines = getpipeoutput(['git rev-list --pretty=format:"%%at %%T" %s' % getlogrange('HEAD'), 'grep -v ^commit']).strip().split('\n')
+                revlines = getpipeoutput(['git rev-list --pretty=format:"%%ct %%T" %s' % getlogrange('HEAD'), 'grep -v ^commit']).strip().split('\n')
                 lines = []
                 revs_to_read = []
                 time_rev_count = []
@@ -527,7 +527,7 @@ class GitDataCollector(DataCollector):
                 extra = ''
                 if conf['linear_linestats']:
                         extra = '--first-parent -m'
-                lines = getpipeoutput(['git log --shortstat %s --pretty=format:"%%at %%aN" %s' % (extra, getlogrange('HEAD'))]).split('\n')
+                lines = getpipeoutput(['git log --shortstat %s --pretty=format:"%%ct %%aN" %s' % (extra, getlogrange('HEAD'))]).split('\n')
                 lines.reverse()
                 files = 0; inserted = 0; deleted = 0; total_lines = 0
                 author = None
@@ -581,7 +581,7 @@ class GitDataCollector(DataCollector):
                 # Similar to the above, but never use --first-parent
                 # (we need to walk through every commit to know who
                 # committed what, not just through mainline)
-                lines = getpipeoutput(['git log --shortstat --date-order --pretty=format:"%%at %%aN" %s' % (getlogrange('HEAD'))]).split('\n')
+                lines = getpipeoutput(['git log --shortstat --date-order --pretty=format:"%%ct %%aN" %s' % (getlogrange('HEAD'))]).split('\n')
                 lines.reverse()
                 files = 0; inserted = 0; deleted = 0
                 author = None
@@ -701,7 +701,7 @@ class GitDataCollector(DataCollector):
                 return self.total_size
 
         def revToDate(self, rev):
-                stamp = int(getpipeoutput(['git log --pretty=format:%%at "%s" -n 1' % rev]))
+                stamp = int(getpipeoutput(['git log --pretty=format:%%ct "%s" -n 1' % rev]))
                 return datetime.datetime.fromtimestamp(stamp).strftime('%Y-%m-%d')
 
 class ReportCreator:
