@@ -821,6 +821,8 @@ function sort_age(a, b, rowA, rowB) {
                 '{title: "# by commits", field: "# by commits"}]\n')
         authors = []
         for id_, author in enumerate(data.getAuthors()):
+            if author == 'leanprover-community-bot':
+                continue
             info = data.getAuthorInfo(author)
             row = { 'id': id_ + 1,
                     'Author': author,
@@ -842,10 +844,14 @@ function sort_age(a, b, rowA, rowB) {
         cda = data.changes_by_date_by_author
         self.authors_to_plot = data.getAuthors(conf['max_authors'])
         for author in self.authors_to_plot:
+            if author == 'leanprover-community-bot':
+                continue
             lines_by_authors[author] = []
             commits_by_authors[author] = []
         for stamp in sorted(cda):
             for author in self.authors_to_plot:
+                if author == 'leanprover-community-bot':
+                    continue
                 if author in cda[stamp]:
                     lines_by_authors[author].append(
                             {'x': stamp,
