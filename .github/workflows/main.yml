@@ -35,7 +35,9 @@ jobs:
         ./gitstats.py mathlib docs
 
     - name: Install gnuplot
-      run: sudo apt-get install gnuplot
+      run: |
+        sudo apt-get update --fix-missing
+        sudo apt-get install gnuplot
 
     - name: Make nolints graph
       run: |
