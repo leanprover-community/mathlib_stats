@@ -1,6 +1,6 @@
 
-gen_date= "2023-09-15 02:09:18"
-gen_duration = 48.1
+gen_date= "2023-09-16 02:07:01"
+gen_duration = 52.5
 report_start = "2017-07-21 08:02:10"
 report_end = "2023-09-12 23:46:39"
 age = 2245
