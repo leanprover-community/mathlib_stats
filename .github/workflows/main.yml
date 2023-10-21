@@ -16,6 +16,9 @@ jobs:
     - name: Checkout mathlib
       run: git clone https://github.com/leanprover-community/mathlib
 
+    - name: Checkout mathlib4
+      run: git clone https://github.com/leanprover-community/mathlib4
+
     - name: Checkout mathlib-mailmap
       uses: actions/checkout@v2
       with:
@@ -33,6 +36,7 @@ jobs:
       run: |
         cp mailmap/mailmap mathlib/.mailmap
         ./gitstats.py mathlib docs
+        ./gitstats.py mathlib4 docs4
 
     - name: Install gnuplot
       run: |
