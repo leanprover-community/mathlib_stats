@@ -39,16 +39,16 @@ jobs:
         ./gitstats.py mathlib4 docs4
         cp docs4/gitstats.js docs/gitstats4.js
 
-    - name: Install gnuplot
-      run: |
-        sudo apt-get update --fix-missing
-        sudo apt-get install gnuplot
+    # - name: Install gnuplot
+    #   run: |
+    #     sudo apt-get update --fix-missing
+    #     sudo apt-get install gnuplot
 
-    - name: Make nolints graph
-      run: |
-        bash nolint_graph.sh > nolint_graph_out.txt
-        cut -f2 -d: nolint_graph_out.txt > rev_stats.txt
-        gnuplot plot.gnu
+    # - name: Make nolints graph
+    #   run: |
+    #     bash nolint_graph.sh > nolint_graph_out.txt
+    #     cut -f2 -d: nolint_graph_out.txt > rev_stats.txt
+    #     gnuplot plot.gnu
 
     - name: push results
       # push results when we push to master
