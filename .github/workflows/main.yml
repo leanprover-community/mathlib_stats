@@ -37,6 +37,7 @@ jobs:
         cp mailmap/mailmap mathlib/.mailmap
         ./gitstats.py mathlib docs
         ./gitstats.py mathlib4 docs4
+        cp docs4/gitstats.js docs/gitstats4.js
 
     - name: Install gnuplot
       run: |
