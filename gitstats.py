@@ -809,6 +809,7 @@ function sort_age(a, b, rowA, rowB) {
 """)
         ### Authors
         data_file.write('authors_cols = ['
+                '{formatter: "rownum", width: 40 },'
                 '{title: "Author", field: "Author"},'
                 '{title: "Commits (%)", field: "Commits (%)", sorter: sort_commits},'
                 '{title: "+ lines", field: "+ lines"},'
@@ -817,8 +818,7 @@ function sort_age(a, b, rowA, rowB) {
                 '{title: "Last commit", field: "Last commit"},'
                 '{title: "Age", field: "Age", sorter: sort_age},'
                 '{title: "age_seconds", field: "age_seconds", visible: false},'
-                '{title: "Active days", field: "Active days"},'
-                '{title: "# by commits", field: "# by commits"}]\n')
+                '{title: "Active days", field: "Active days"}]\n')
         authors = []
         for id_, author in enumerate(data.getAuthors()):
             if author == 'leanprover-community-bot':
@@ -833,8 +833,7 @@ function sort_age(a, b, rowA, rowB) {
                     'Last commit': info['date_last'],
                     'Age': str(info['timedelta']),
                     'age_seconds': info['age_seconds'],
-                    'Active days': len(info['active_days']),
-                    '# by commits': info['place_by_commits']}
+                    'Active days': len(info['active_days'])}
             authors.append(row)
         data_file.write(f'authors = {json.dumps(authors)}\n')
 
