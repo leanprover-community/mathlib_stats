@@ -35,6 +35,7 @@ jobs:
     - name: Run gitstats
       run: |
         cp mailmap/mailmap mathlib/.mailmap
+        cp mailmap/mailmap mathlib4/.mailmap
         ./gitstats.py mathlib docs
         ./gitstats.py mathlib4 docs4
         cp docs4/gitstats.js docs/gitstats4.js
