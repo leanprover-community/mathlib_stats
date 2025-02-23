@@ -33,14 +33,18 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: Run gitstats and count contributors with script from mathlib-mailmap
+    - name: Count contributors with script from mathlib-mailmap
+      run: |
+        cd mailmap
+        ./count > ../docs/contributor-count
+
+    - name: Run gitstats and
       run: |
         cp mailmap/mailmap mathlib/.mailmap
         cp mailmap/mailmap mathlib4/.mailmap
         ./gitstats.py mathlib docs
         ./gitstats.py mathlib4 docs4
         cp docs4/gitstats.js docs/gitstats4.js
-        mailmap/count > docs/contributor-count
 
     - name: push results
       # push results when we push to master
