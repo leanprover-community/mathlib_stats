@@ -33,6 +33,12 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Count contributors with script from mathlib-mailmap
+      run: |
+        cd mailmap
+        ./count > ../docs/contributor-count
+        cat ../docs/contributor-count
+
     - name: Run gitstats
       run: |
         cp mailmap/mailmap mathlib/.mailmap
