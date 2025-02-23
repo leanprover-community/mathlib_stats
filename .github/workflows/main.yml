@@ -37,8 +37,9 @@ jobs:
       run: |
         cd mailmap
         ./count > ../docs/contributor-count
+        cat ../docs/contributor-count
 
-    - name: Run gitstats and
+    - name: Run gitstats
       run: |
         cp mailmap/mailmap mathlib/.mailmap
         cp mailmap/mailmap mathlib4/.mailmap
