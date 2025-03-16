@@ -323,7 +323,7 @@ class GitDataCollector(DataCollector):
                                 self.tags[tag]['authors'][author] = commits
 
                 # Collect revision statistics
-                # Outputs "<stamp> <date> <time> <timezone> <subject> <author> '<' <mail> '>'"
+                # Outputs "<stamp> <date> <time> <timezone> <author> '<' <mail> '>'"
                 lines = getpipeoutput(['git rev-list --pretty=format:"%%ct %%ai %%aN <%%aE>" %s' % getlogrange('HEAD'), 'grep -v ^commit']).split('\n')
                 # call getpipeoutput with git rev-list twice to isolate commit subject to sidestep any bad escaping
                 # use a prefix of "s:" in case the commit subject happens to start with "commit"
