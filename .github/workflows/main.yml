@@ -44,8 +44,11 @@ jobs:
         cp mailmap/mailmap mathlib/.mailmap
         cp mailmap/mailmap mathlib4/.mailmap
         ./gitstats.py mathlib docs
+        mkdir docs4
+        cp docs/gitstats4.cache docs4/gitstats.cache || true
         ./gitstats.py mathlib4 docs4
         cp docs4/gitstats.js docs/gitstats4.js
+        cp docs4/gitstats.cache docs/gitstats4.cache
 
     - name: push results
       # push results when we push to master
