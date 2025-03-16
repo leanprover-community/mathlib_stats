@@ -162,6 +162,12 @@ class DataCollector:
                 self.last_active_day = None
                 self.active_days = set()
 
+                # the commit label is the first regex word in the commit subject, later normalized to lower case
+                self.commit_label_re = re.compile(r'^\W*(?P<label>\w+)')
+                self.commits_by_type_by_month = {} # month -> commit type -> commits
+                self.commits_by_type_by_year = {} # year -> commit type -> commits
+                self.commits_by_label = {} # commit type -> commits
+
                 # lines
                 self.total_lines = 0
                 self.total_lines_added = 0
@@ -317,9 +323,16 @@ class GitDataCollector(DataCollector):
                                 self.tags[tag]['authors'][author] = commits
 
                 # Collect revision statistics
-                # Outputs "<stamp> <date> <time> <timezone> <author> '<' <mail> '>'"
+                # Outputs "<stamp> <date> <time> <timezone> <subject> <author> '<' <mail> '>'"
                 lines = getpipeoutput(['git rev-list --pretty=format:"%%ct %%ai %%aN <%%aE>" %s' % getlogrange('HEAD'), 'grep -v ^commit']).split('\n')
-                for line in lines:
+                # call getpipeoutput with git rev-list twice to isolate commit subject to sidestep any bad escaping
+                # use a prefix of "s:" in case the commit subject happens to start with "commit"
+                subject_lines = getpipeoutput(['git rev-list --pretty=format:"s:%%s" %s' % getlogrange('HEAD'), 'grep -v ^commit']).split('\n')
+                for line, subject_line in zip(lines, subject_lines):
+                        subject = subject_line[2:] # everything after "s:"
+                        commit_label = self.commit_label_re.search(subject).group('label').lower()
+                        self.commits_by_label[commit_label] = self.commits_by_label.get(commit_label, 0) + 1
+
                         parts = line.split(' ', 4)
                         author = ''
                         try:
@@ -399,6 +412,12 @@ class GitDataCollector(DataCollector):
                                 self.author_of_month[yymm][author] = 1
                         self.commits_by_month[yymm] = self.commits_by_month.get(yymm, 0) + 1
 
+                        if yymm in self.commits_by_type_by_month:
+                                self.commits_by_type_by_month[yymm][commit_label] = self.commits_by_type_by_month[yymm].get(commit_label, 0) + 1
+                        else:
+                                self.commits_by_type_by_month[yymm] = {}
+                                self.commits_by_type_by_month[yymm][commit_label] = 1
+
                         yy = date.year
                         if yy in self.author_of_year:
                                 self.author_of_year[yy][author] = self.author_of_year[yy].get(author, 0) + 1
@@ -406,6 +425,12 @@ class GitDataCollector(DataCollector):
                                 self.author_of_year[yy] = {}
                                 self.author_of_year[yy][author] = 1
                         self.commits_by_year[yy] = self.commits_by_year.get(yy, 0) + 1
+
+                        if yy in self.commits_by_type_by_year:
+                                self.commits_by_type_by_year[yy][commit_label] = self.commits_by_type_by_year[yy].get(commit_label, 0) + 1
+                        else:
+                                self.commits_by_type_by_year[yy] = {}
+                                self.commits_by_type_by_year[yy][commit_label] = 1
 
                         # authors: active days
                         yymmdd = date.strftime('%Y-%m-%d')
@@ -503,6 +528,8 @@ class GitDataCollector(DataCollector):
                                 self.extensions[ext]['lines'] += self.cache['lines_in_blob'][blob_id]
                         else:
                                 blobs_to_read.append((ext,blob_id))
+
+                # TODO: filter by top level directory
 
                 #Get info abount line count for new blob's that wasn't found in cache
                 pool = Pool(processes=conf['processes'])
@@ -734,6 +761,7 @@ number_lines = {data.getTotalLOC()}
 lines_added = {data.total_lines_added}
 lines_removed = {data.total_lines_removed}
 total_commits = {data.getTotalCommits()}
+total_commits_by_label = {json.dumps(data.commits_by_label, separators=(',', ':'))}
 avg_commits_per_active_day = {float(data.getTotalCommits()) / len(data.getActiveDays()):.1f}
 avg_commits_per_day = {float(data.getTotalCommits()) / data.getCommitDeltaDays():.1f}
 nb_authors = {data.getTotalAuthors()}
@@ -787,11 +815,23 @@ avg_commits_by_author = {data.getTotalCommits()/data.getTotalAuthors():.1f}
                   'data': [data.commits_by_month[yymm] for yymm in yymms]}
         data_file.write(f'by_year_month = {json.dumps(jdata)}\n')
 
+        jdata = {}
+        for commit_label in data.commits_by_label.keys():
+                jdata[commit_label] = { 'labels' : list(yymms),
+                        'data': [data.commits_by_type_by_month[yymm].get(commit_label, 0) for yymm in yymms]}
+        data_file.write(f'by_labels_by_year_month = {json.dumps(jdata)}\n')
+
         ### Commits by year
         years = sorted(data.commits_by_year.keys())
         jdata = { 'labels' : list(years),
                   'data': [data.commits_by_year[year] for year in years]}
         data_file.write(f'by_year = {json.dumps(jdata)}\n')
+
+        jdata = {}
+        for commit_label in data.commits_by_label.keys():
+                jdata[commit_label] = { 'labels' : list(years),
+                        'data': [data.commits_by_type_by_year[year].get(commit_label, 0) for year in years]}
+        data_file.write(f'by_labels_by_year = {json.dumps(jdata)}\n')
 
         ### By time zone missing (pure table)
 
@@ -926,6 +966,8 @@ function sort_age(a, b, rowA, rowB) {
                 dates.append(stamp)
                 files.append(nb)
                 cur_nb = nb
+
+        ### TODO: do for each top level directory
 
         data_file.write( f"files_stamps = {dates}\n")
         data_file.write( f"files_by_date = {{'Number of files': {files}}}\n")
