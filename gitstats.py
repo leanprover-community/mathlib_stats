@@ -329,8 +329,11 @@ class GitDataCollector(DataCollector):
                 # use a prefix of "s:" in case the commit subject happens to start with "commit"
                 subject_lines = getpipeoutput(['git rev-list --pretty=format:"s:%%s" %s' % getlogrange('HEAD'), 'grep -v ^commit']).split('\n')
                 for line, subject_line in zip(lines, subject_lines):
-                        subject = subject_line[2:] # everything after "s:"
-                        commit_label = self.commit_label_re.search(subject).group('label').lower()
+                        subject = subject_line[2:].lower() # everything after "s:"
+                        if subject.startswith('feat: port'):
+                                commit_label = 'feat: port'
+                        else:
+                                commit_label = self.commit_label_re.search(subject).group('label')
                         self.commits_by_label[commit_label] = self.commits_by_label.get(commit_label, 0) + 1
 
                         parts = line.split(' ', 4)
