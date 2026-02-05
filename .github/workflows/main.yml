@@ -10,9 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     name: Generate statistics about the mathlib repo
     steps:
+    - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      id: app-token
+      with:
+        app-id: ${{ secrets.MAILMAP_APP_ID }}
+        private-key: ${{ secrets.MAILMAP_PRIVATE_KEY }}
+        owner: leanprover-community
+        repositories: mathlib-mailmap
 
     - name: Checkout scripts
-      uses: actions/checkout@v4
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
     - name: Checkout mathlib
       run: git clone https://github.com/leanprover-community/mathlib
@@ -21,15 +28,15 @@ jobs:
       run: git clone https://github.com/leanprover-community/mathlib4
 
     - name: Checkout mathlib-mailmap
-      uses: actions/checkout@v4
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         # this repo is private to prevent spambots from scraping email addresses
         repository: leanprover-community/mathlib-mailmap
-        token: ${{ secrets.MAILMAP_GITHUB_TOKEN }}
+        token: ${{ steps.app-token.outputs.token }}
         path: mailmap
 
     - name: install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:
         python-version: 3.8
 
@@ -53,7 +60,7 @@ jobs:
     - name: push results
       # push results when we push to master
       if: github.repository == 'leanprover-community/mathlib_stats' && github.ref == 'refs/heads/master'
-      uses: EndBug/add-and-commit@v9
+      uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9.1.4
       with:
         add: 'docs'
         author_name: 'leanprover-community-bot'
