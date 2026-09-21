@@ -6,6 +6,8 @@ on:
 
 jobs:
   mathlib_stats:
+    permissions:
+      contents: write
     if: github.event.pusher.name != 'leanprover-community-bot'
     runs-on: ubuntu-latest
     name: Generate statistics about the mathlib repo
